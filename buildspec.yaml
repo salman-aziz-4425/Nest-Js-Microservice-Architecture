@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+     - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 457977167319.dkr.ecr.ap-south-1.amazonaws.com
+  build:
+    commands:
+     - docker build -t reservations -f ./apps/reservations/Dockerfile .
+     - docker tag reservations:latest 457977167319.dkr.ecr.ap-south-1.amazonaws.com/reservations:latest
+  post_build:
+    commands:
+     - docker push 457977167319.dkr.ecr.ap-south-1.amazonaws.com/reservations:latest
