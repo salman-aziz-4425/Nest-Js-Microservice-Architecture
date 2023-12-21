@@ -9,5 +9,15 @@ services:
       - '3000:3000'
     volumes:
       - .:/usr/src/app
+  notifications:
+    build:
+      context: .
+      dockerfile: ./apps/notifications/Dockerfile
+      target: development
+    command: pnpm run start:dev notifications
+    ports:
+      - '3001:3001'
+    volumes:
+      - .:/usr/src/app
   mongo:
     image: mongo

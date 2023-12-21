@@ -1,13 +1,19 @@
-import { Injectable } from '@nestjs/common';
-
+import { Inject, Injectable } from '@nestjs/common';
+import { NOTIFICATIONS_SERVICE } from '@app/common';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationRepository } from './reservations.repository';
 import { ConfigService } from '@nestjs/config';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class ReservationsService {
-  constructor(private readonly reservationsRepository: ReservationRepository) {}
+  constructor(
+    private readonly reservationsRepository: ReservationRepository,
+    private readonly configService: ConfigService,
+    @Inject(NOTIFICATIONS_SERVICE)
+    private readonly notificationsService: ClientProxy,
+  ) {}
 
   create(createReservationDto: CreateReservationDto) {
     return this.reservationsRepository.create({
@@ -17,8 +23,11 @@ export class ReservationsService {
     });
   }
 
-  findAll() {
+  async findAll() {
     const configService = new ConfigService();
+    this.notificationsService.emit('notify_email', {
+      email: 'salmanaziz216@gmail.com',
+    });
     console.log(configService.get<string>('MONGODB_URI'));
     return this.reservationsRepository.find({});
   }
